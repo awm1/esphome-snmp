@@ -237,7 +237,7 @@ void SNMPComponent::setup_wifi_mib_() {
 }
 
 
-void SNMPComponent::other_sensors(){
+void SNMPComponent::other_sensors_(){
   snmp_agent_.addDynamicIntegerHandler(CUSTOM_OID "5.1.0","testedd");
 }
 
@@ -270,6 +270,7 @@ void SNMPComponent::setup() {
 #endif
   setup_chip_mib_();
   setup_wifi_mib_();
+  other_sensors_();
 
   snmp_agent_.sortHandlers();  // for walk to work properly
 
