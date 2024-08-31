@@ -235,9 +235,9 @@ void SNMPComponent::setup_wifi_mib_() {
 }
 
 
-
+void SNMPComponent::other_sensors(){
   snmp_agent_.addDynamicIntegerHandler(CUSTOM_OID "5.1.0","testedd");
-
+}
 
 
 
