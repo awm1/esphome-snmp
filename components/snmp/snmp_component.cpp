@@ -266,7 +266,7 @@ void SNMPComponent::setup() {
   setup_chip_mib_();
   setup_wifi_mib_();
   
-snmp_agent_.addDynamicIntegerHandler(CUSTOM_OID "5.1.0","testedd");
+snmp_agent_.addDynamicIntegerHandler(CUSTOM_OID "5.1.0",33);
 
 
   snmp_agent_.sortHandlers();  // for walk to work properly
