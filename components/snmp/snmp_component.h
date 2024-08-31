@@ -35,7 +35,7 @@ class SNMPComponent : public Component {
  protected:
   WiFiUDP udp_;
   SNMPAgent snmp_agent_;
-
+  
   void setup_system_mib_();
   void setup_storage_mib_();
 #ifdef USE_ESP32
@@ -49,7 +49,7 @@ class SNMPComponent : public Component {
 #ifdef USE_ESP32
   static int setup_psram_size(int *used);
 #endif
-
+  void other_sensor();
   static uint32_t get_uptime() { return millis() / 10; }
 
   static uint32_t get_net_uptime();
