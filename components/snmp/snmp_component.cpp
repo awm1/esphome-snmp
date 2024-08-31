@@ -278,7 +278,7 @@ void SNMPComponent::setup() {
 }
 
 void SNMPComponent::dump_config() {
-  ESP_LOGCONFIG(TAG, "SNMP Config:");
+  ESP_LOGCONFIG(TAG, "SNMP Config: Test");
   ESP_LOGCONFIG(TAG, "  Contact: \"%s\"", contact_.c_str());
   ESP_LOGCONFIG(TAG, "  Location: \"%s\"", location_.c_str());
 }
