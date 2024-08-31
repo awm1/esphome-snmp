@@ -270,7 +270,6 @@ void SNMPComponent::setup() {
 #endif
   setup_chip_mib_();
   setup_wifi_mib_();
-  other_sensors_();
 
   snmp_agent_.sortHandlers();  // for walk to work properly
 
