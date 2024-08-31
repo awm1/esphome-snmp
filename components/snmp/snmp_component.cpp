@@ -236,6 +236,17 @@ void SNMPComponent::setup_wifi_mib_() {
         return ip_array.size() ? wifi::global_wifi_component->wifi_sta_ip_addresses()[0].str() : ""; } );
 }
 
+
+
+  snmp_agent_.addDynamicIntegerHandler(CUSTOM_OID "5.1.0","testedd");
+
+
+
+
+
+
+
+
 void SNMPComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up SNMP...");
 
