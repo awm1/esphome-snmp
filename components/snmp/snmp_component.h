@@ -49,7 +49,7 @@ class SNMPComponent : public Component {
 #ifdef USE_ESP32
   static int setup_psram_size(int *used);
 #endif
-  void other_sensor();
+  void other_sensor_();
   static uint32_t get_uptime() { return millis() / 10; }
 
   static uint32_t get_net_uptime();
