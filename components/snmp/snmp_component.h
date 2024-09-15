@@ -61,6 +61,12 @@ class SNMPComponent : public Component {
   static int get_ram_size_kb();
 #endif
 
+
+ void custom_vars_();
+ static std::string  getSensor_();
+ static std::string  gettemp1_();
+ static std::string  getAC1_();
+
   /// contact string
   std::string contact_;
 
