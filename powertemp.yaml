@@ -1,0 +1,67 @@
+esphome:
+  name: powertemp
+
+esp32:
+  board: dfrobot_beetle_esp32c3
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+
+ota:
+  - platform: esphome
+    password: "12woodsidepark"
+
+wifi:
+  ssid: "myne"
+  password: "12woodsidepark"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Powertemp Fallback Hotspot"
+    password: "pD5485udYXqd"
+
+captive_portal:
+   
+# Example configuration entry
+web_server:
+
+# Activates prometheus /metrics endpoint
+prometheus: 
+
+external_components:
+    # SNMP component
+    - source:  /Users/edd/dev/esphome-snmp/components/
+      refresh: 0s
+
+
+snmp:
+  contact: Joe
+  location: Basement
+
+one_wire:
+  - platform: gpio
+    pin: GPIO20
+
+sensor:
+  - platform: dallas_temp
+    name: temperature1
+    update_interval: 120s
+    id: temp1
+  - platform: dallas_temp
+    name: temperature2
+    update_interval: 120s
+    id: temp2
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO0
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    name: ACIN
+    id: ACIN
