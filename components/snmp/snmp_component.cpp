@@ -281,14 +281,14 @@ auto sensors = App.get_sensors();
 
 std::string SNMPComponent::getAC1_() {
   char buf[30];
-
+/*
 auto pins = App.get_binary_sensors();
   ESP_LOGD("app", "Sensor: %s", pins[0]->get_name().c_str());
   ESP_LOGD("app", "Sensor state: %i", pins[0]->state);
 
 
   sprintf(buf, "%i", pins[0]->state );
-  
+*/
 
   return buf;
 }
