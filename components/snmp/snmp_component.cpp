@@ -3,6 +3,7 @@
 #include "esphome/core/application.h"
 #include "esphome/core/version.h"
 #include "esphome/components/wifi/wifi_component.h"
+#include "esphome.h"
 
 // Integration test available: https://github.com/aquaticus/esphome_snmp_tests
 
@@ -121,6 +122,9 @@ void SNMPComponent::setup_storage_mib_() {
   });
 #endif
 
+
+
+
 #ifdef USE_ESP8266
   // hrStorageSize
   snmp_agent_.addReadOnlyIntegerHandler(".1.3.6.1.2.1.25.2.3.1.5.2", 0);
@@ -234,6 +238,75 @@ void SNMPComponent::setup_wifi_mib_() {
         return ip_array.size() ? wifi::global_wifi_component->wifi_sta_ip_addresses()[0].str() : ""; } );
 }
 
+
+
+std::string SNMPComponent::getSensor_() {
+  char buf[30];
+  //float temp1 = id("temp1");
+   float temp1 = 123123;
+    //ESP_LOGI("main", "Raw Value of my sensor: %f", id("temp1"));
+
+auto sensors = App.get_sensors();
+  ESP_LOGD("app", "Sensor: %s", sensors[1]->get_name().c_str());
+  ESP_LOGD("app", "Sensor state: %f", sensors[1]->state);
+
+
+
+
+
+  sprintf(buf, "%f", temp1 );
+  return buf;
+} 
+
+
+
+
+std::string SNMPComponent::gettemp1_() {
+  char buf[30];
+   float temp1 = 123123;
+    //ESP_LOGI("main", "Raw Value of my sensor: %f", id("temp1"));
+
+auto sensors = App.get_sensors();
+  ESP_LOGD("app", "Sensor: %s", sensors[0]->get_name().c_str());
+  ESP_LOGD("app", "Sensor state: %f", sensors[0]->state);
+
+
+
+
+
+  sprintf(buf, "%f", sensors[0]->state );
+  return buf;
+}
+
+
+std::string SNMPComponent::getAC1_() {
+  char buf[30];
+
+auto pins = App.get_binary_sensors();
+  ESP_LOGD("app", "Sensor: %s", pins[0]->get_name().c_str());
+  ESP_LOGD("app", "Sensor state: %i", pins[0]->state);
+
+
+  sprintf(buf, "%i", pins[0]->state );
+  
+
+  return buf;
+}
+
+void SNMPComponent::custom_vars_() {
+
+
+
+ snmp_agent_.addDynamicReadOnlyStringHandler(CUSTOM_OID "5.1.1", gettemp1_);
+ snmp_agent_.addDynamicReadOnlyStringHandler(CUSTOM_OID "5.2.1", getAC1_);
+
+}
+
+
+
+
+
+
 void SNMPComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up SNMP...");
 
@@ -247,6 +320,7 @@ void SNMPComponent::setup() {
   // hrSystemUptime
   snmp_agent_.addDynamicReadOnlyTimestampHandler(".1.3.6.1.2.1.25.1.1.0", get_uptime);
 
+  custom_vars_();
   setup_system_mib_();
   setup_storage_mib_();
 #if USE_ESP32
@@ -258,19 +332,29 @@ void SNMPComponent::setup() {
   setup_chip_mib_();
   setup_wifi_mib_();
 
+
   snmp_agent_.sortHandlers();  // for walk to work properly
 
   snmp_agent_.setUDP(&udp_);
+
+  
   snmp_agent_.begin();
 }
 
 void SNMPComponent::dump_config() {
-  ESP_LOGCONFIG(TAG, "SNMP Config:");
+  ESP_LOGCONFIG(TAG, "SNMP Config: Test");
   ESP_LOGCONFIG(TAG, "  Contact: \"%s\"", contact_.c_str());
   ESP_LOGCONFIG(TAG, "  Location: \"%s\"", location_.c_str());
+  ESP_LOGI("main", "Raw Value of my sensor: %f", id("temp1"));
+
 }
 
+
 void SNMPComponent::loop() { snmp_agent_.loop(); }
+
+
+
+
 
 #if USE_ESP32
 int SNMPComponent::get_ram_size_kb() {
