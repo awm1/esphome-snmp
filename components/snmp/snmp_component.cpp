@@ -2,8 +2,12 @@
 #include "esphome/core/log.h"
 #include "esphome/core/application.h"
 #include "esphome/core/version.h"
+#ifdef USE_ESP32
+#include "esphome/components/ethernet/ethernet_component.h"
+#endif
+#ifdef USE_ESP8266
 #include "esphome/components/wifi/wifi_component.h"
-#include "esphome.h"
+#endif
 
 // Integration test available: https://github.com/aquaticus/esphome_snmp_tests
 
@@ -20,11 +24,7 @@ static const char *const TAG = "snmp";
 /// Function returns real value if @c wifi_connected_timestamp() function
 /// was implemented in WiFi module.
 uint32_t SNMPComponent::get_net_uptime() {
-#ifdef WIFI_CONNECTED_TIMESTAMP_AVAILABLE
-  return (millis() - wifi::global_wifi_component->wifi_connected_timestamp()) / 10;
-#else
   return 0; //not available
-#endif
 }
 
 void SNMPComponent::setup_system_mib_() {
@@ -144,13 +144,6 @@ void SNMPComponent::setup_storage_mib_() {
 #endif
 }
 
-std::string SNMPComponent::get_bssid() {
-  char buf[30];
-  wifi::bssid_t bssid = wifi::global_wifi_component->wifi_bssid();
-  sprintf(buf, "%02X:%02X:%02X:%02X:%02X:%02X", bssid[0], bssid[1], bssid[2], bssid[3], bssid[4], bssid[5]);
-  return buf;
-}
-
 #if USE_ESP32
 void SNMPComponent::setup_esp32_heap_mib_() {
   // heap size
@@ -219,26 +212,6 @@ void SNMPComponent::setup_chip_mib_() {
 
 }
 
-void SNMPComponent::setup_wifi_mib_() {
-  // RSSI
-  snmp_agent_.addDynamicIntegerHandler(CUSTOM_OID "4.1.0",
-                                       []() -> int { return wifi::global_wifi_component->wifi_rssi(); });
-
-  // BSSID
-  snmp_agent_.addDynamicReadOnlyStringHandler(CUSTOM_OID "4.2.0", get_bssid);
-
-  // SSID
-  snmp_agent_.addDynamicReadOnlyStringHandler(CUSTOM_OID "4.3.0",
-                                              []() -> std::string { return wifi::global_wifi_component->wifi_ssid(); });
-
-  // IP
-  snmp_agent_.addDynamicReadOnlyStringHandler(
-      CUSTOM_OID "4.4.0", []() -> std::string { 
-        const auto& ip_array = wifi::global_wifi_component->wifi_sta_ip_addresses();
-        return ip_array.size() ? wifi::global_wifi_component->wifi_sta_ip_addresses()[0].str() : ""; } );
-}
-
-
 
 std::string SNMPComponent::getSensor_() {
   char buf[30];
@@ -261,45 +234,78 @@ auto sensors = App.get_sensors();
 
 
 
-std::string SNMPComponent::gettemp1_() {
+std::string SNMPComponent::getTemperature_(const int index) {
   char buf[30];
-   float temp1 = 123123;
-    //ESP_LOGI("main", "Raw Value of my sensor: %f", id("temp1"));
 
-auto sensors = App.get_sensors();
-  ESP_LOGD("app", "Sensor: %s", sensors[0]->get_name().c_str());
-  ESP_LOGD("app", "Sensor state: %f", sensors[0]->state);
+  auto sensors = App.get_sensors();
 
+  if (sensors.size() > index) {
+    ESP_LOGD("app", "Sensor: %s", sensors[index]->get_name().c_str());
+    ESP_LOGD("app", "Sensor state: %f", sensors[index]->state);
+    sprintf(buf, "%f", sensors[index]->state );
+  } else {
+    sprintf(buf, "%f", 0.0 );
+  }
 
-
-
-
-  sprintf(buf, "%f", sensors[0]->state );
   return buf;
 }
 
 
-std::string SNMPComponent::getAC1_() {
+std::string SNMPComponent::getAC_(const int index) {
   char buf[30];
 /*
 auto pins = App.get_binary_sensors();
-  ESP_LOGD("app", "Sensor: %s", pins[0]->get_name().c_str());
-  ESP_LOGD("app", "Sensor state: %i", pins[0]->state);
+  ESP_LOGD("app", "Sensor: %s", pins[index]->get_name().c_str());
+  ESP_LOGD("app", "Sensor state: %i", pins[index]->state);
 
 
-  sprintf(buf, "%i", pins[0]->state );
+  sprintf(buf, "%i", pins[index]->state );
 */
 
   return buf;
 }
 
+std::string SNMPComponent::getTemperature1_() {
+  return getTemperature_(0);
+}
+
+std::string SNMPComponent::getTemperature2_() {
+  return getTemperature_(1);
+}
+
+std::string SNMPComponent::getTemperature3_() {
+  return getTemperature_(2);
+}
+
+std::string SNMPComponent::getTemperature4_() {
+  return getTemperature_(3);
+}
+
+std::string SNMPComponent::getTemperature5_() {
+  return getTemperature_(4);
+}
+
+std::string SNMPComponent::getTemperature6_() {
+  return getTemperature_(5);
+}
+
+std::string SNMPComponent::getTemperature7_() {
+  return getTemperature_(6);
+}
+
+std::string SNMPComponent::getTemperature8_() {
+  return getTemperature_(7);
+}
+
 void SNMPComponent::custom_vars_() {
-
-
-
- snmp_agent_.addDynamicReadOnlyStringHandler(CUSTOM_OID "5.1.1", gettemp1_);
- snmp_agent_.addDynamicReadOnlyStringHandler(CUSTOM_OID "5.2.1", getAC1_);
-
+  snmp_agent_.addDynamicReadOnlyStringHandler(CUSTOM_OID "5.1.1", getTemperature1_);
+  snmp_agent_.addDynamicReadOnlyStringHandler(CUSTOM_OID "5.1.2", getTemperature2_);
+  snmp_agent_.addDynamicReadOnlyStringHandler(CUSTOM_OID "5.1.3", getTemperature3_);
+  snmp_agent_.addDynamicReadOnlyStringHandler(CUSTOM_OID "5.1.4", getTemperature4_);
+  snmp_agent_.addDynamicReadOnlyStringHandler(CUSTOM_OID "5.1.5", getTemperature5_);
+  snmp_agent_.addDynamicReadOnlyStringHandler(CUSTOM_OID "5.1.6", getTemperature6_);
+  snmp_agent_.addDynamicReadOnlyStringHandler(CUSTOM_OID "5.1.7", getTemperature7_);
+  snmp_agent_.addDynamicReadOnlyStringHandler(CUSTOM_OID "5.1.8", getTemperature8_);
 }
 
 
@@ -330,13 +336,11 @@ void SNMPComponent::setup() {
   setup_esp8266_heap_mib_();
 #endif
   setup_chip_mib_();
-  setup_wifi_mib_();
 
 
   snmp_agent_.sortHandlers();  // for walk to work properly
 
   snmp_agent_.setUDP(&udp_);
-
   
   snmp_agent_.begin();
 }
@@ -345,8 +349,7 @@ void SNMPComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "SNMP Config: Test");
   ESP_LOGCONFIG(TAG, "  Contact: \"%s\"", contact_.c_str());
   ESP_LOGCONFIG(TAG, "  Location: \"%s\"", location_.c_str());
-  ESP_LOGI("main", "Raw Value of my sensor: %f", id("temp1"));
-
+  //ESP_LOGCONFIG(TAG, "  Sensor count: \"%s\"", sensor_count_);
 }
 
 
