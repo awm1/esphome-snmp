@@ -25,12 +25,14 @@ class SNMPComponent : public Component {
   SNMPComponent() : snmp_agent_("public", "private"){};
   void setup() override;
   void dump_config() override;
-  float get_setup_priority() const override { return setup_priority::AFTER_WIFI; }
+  float get_setup_priority() const override { return setup_priority::LATE; }
   void loop() override;
 
   void set_contact(const std::string &contact) { contact_ = contact; }
 
   void set_location(const std::string &location) { location_ = location; }
+
+  void set_sensor_count(const int sensor_count) { sensor_count_ = sensor_count; }
 
  protected:
   WiFiUDP udp_;
@@ -45,15 +47,12 @@ class SNMPComponent : public Component {
   void setup_esp8266_heap_mib_();
 #endif
   void setup_chip_mib_();
-  void setup_wifi_mib_();
 #ifdef USE_ESP32
   static int setup_psram_size(int *used);
 #endif
   static uint32_t get_uptime() { return millis() / 10; }
 
   static uint32_t get_net_uptime();
-
-  static std::string get_bssid();
 
 #ifdef USE_ESP32
   static int get_ram_size_kb();
@@ -62,14 +61,25 @@ class SNMPComponent : public Component {
 
  void custom_vars_();
  static std::string  getSensor_();
- static std::string  gettemp1_();
- static std::string  getAC1_();
+ static std::string  getTemperature_(const int index);
+ static std::string  getAC_(const int index);
+ static std::string  getTemperature1_();
+ static std::string  getTemperature2_();
+ static std::string  getTemperature3_();
+ static std::string  getTemperature4_();
+ static std::string  getTemperature5_();
+ static std::string  getTemperature6_();
+ static std::string  getTemperature7_();
+ static std::string  getTemperature8_();
 
   /// contact string
   std::string contact_;
 
   /// location string
   std::string location_;
+
+  /// sensor count
+  int sensor_count_;
 };
 
 }  // namespace snmp
